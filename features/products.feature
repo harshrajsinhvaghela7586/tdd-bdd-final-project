@@ -1,40 +1,82 @@
-Feature: The product store service back-end
-    As a Product Store Owner
-    I need a RESTful catalog service
-    So that I can keep track of all my products
-
-Background:
+Feature: Product Management UI
+  Background:
     Given the following products
-        | name       | description     | price   | available | category   |
-        | Hat        | A red fedora    | 59.95   | True      | CLOTHS     |
-        | Shoes      | Blue shoes      | 120.50  | False     | CLOTHS     |
-        | Big Mac    | 1/4 lb burger   | 5.99    | True      | FOOD       |
-        | Sheets     | Full bed sheets | 87.00   | True      | HOUSEWARES |
+      | name  | description    | price | available | category |
+      | Hat   | A red fedora   | 59.95 | True      | Cloths   |
+      | Shirt | Blue cotton    | 29.99 | True      | Cloths   |
+      | Ball  | Soccer ball    | 19.99 | False     | Toys     |
+      | Book  | Python guide   | 39.99 | True      | Books    |
+      | ToyCar| Small toy car  | 9.99  | True      | Toys     |
 
-Scenario: The server is running
-    When I visit the "Home Page"
-    Then I should see "Product Catalog Administration" in the title
-    And I should not see "404 Not Found"
-
-Scenario: Create a Product
-    When I visit the "Home Page"
-    And I set the "Name" to "Hammer"
-    And I set the "Description" to "Claw hammer"
-    And I select "True" in the "Available" dropdown
-    And I select "Tools" in the "Category" dropdown
-    And I set the "Price" to "34.95"
-    And I press the "Create" button
+  # -------------------- READ --------------------
+  Scenario: Read a Product
+    When I start on the "Home Page"
+    And I set "Name" to "Hat"
+    And I press the "Search" button
     Then I should see the message "Success"
     When I copy the "Id" field
     And I press the "Clear" button
-    Then the "Id" field should be empty
-    And the "Name" field should be empty
-    And the "Description" field should be empty
-    When I paste the "Id" field
+    And I paste the "Id" field
     And I press the "Retrieve" button
     Then I should see the message "Success"
-    And I should see "Hammer" in the "Name" field
-    And I should see "Claw hammer" in the "Description" field
+    And I should see "Hat" in the "Name" field
+    And I should see "A red fedora" in the "Description" field
     And I should see "True" in the "Available" dropdown
-    And I should see "Tools" in the "Category" dropdown
-    And I should see "34.95" in the "Price" field
+    And I should see "Cloths" in the "Category" dropdown
+    And I should see "59.95" in the "Price" field
+
+  # -------------------- UPDATE --------------------
+  Scenario: Update a Product
+    When I start on the "Home Page"
+    And I copy the "Id" field for "Hat"
+    And I set "Description" to "A stylish red fedora"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see "A stylish red fedora" in the "Description" field
+
+  # -------------------- DELETE --------------------
+  Scenario: Delete a Product
+    When I start on the "Home Page"
+    And I copy the "Id" field for "Shirt"
+    And I press the "Delete" button
+    Then I should see the message "Success"
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Not Found"
+
+  # -------------------- LIST ALL --------------------
+  Scenario: List all Products
+    When I start on the "Home Page"
+    And I press the "List All" button
+    Then I should see "Hat" in the "Name" field
+    And I should see "Shirt" in the "Name" field
+    And I should see "Ball" in the "Name" field
+    And I should see "Book" in the "Name" field
+    And I should see "ToyCar" in the "Name" field
+
+  # -------------------- SEARCH BY NAME --------------------
+  Scenario: Search by Name
+    When I start on the "Home Page"
+    And I set "Name" to "Ball"
+    And I press the "Search" button
+    Then I should see "Ball" in the "Name" field
+
+  # -------------------- SEARCH BY CATEGORY --------------------
+  Scenario: Search by Category
+    When I start on the "Home Page"
+    And I set "Category" to "Toys"
+    And I press the "Search" button
+    Then I should see "Ball" in the "Name" field
+    And I should see "ToyCar" in the "Name" field
+
+  # -------------------- SEARCH BY AVAILABILITY --------------------
+  Scenario: Search by Availability
+    When I start on the "Home Page"
+    And I set "Available" to "True"
+    And I press the "Search" button
+    Then I should see "Hat" in the "Name" field
+    And I should see "Shirt" in the "Name" field
+    And I should see "Book" in the "Name" field
+    And I should see "ToyCar" in the "Name" field
